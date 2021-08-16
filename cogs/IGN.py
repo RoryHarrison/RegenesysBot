@@ -11,8 +11,8 @@ class IGNCog(commands.Cog):
         self.igns = igns
 
     @commands.command()
-    async def setign(self, ctx, ign):
-        self.igns[ctx.author.id] = ign
+    async def register(self, ctx, ign):
+        self.igns[str(ctx.author.id)] = ign
         
         with open(IGN_PATH, 'w') as outfile:
             json.dump(self.igns, outfile)

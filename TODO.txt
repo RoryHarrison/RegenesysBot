@@ -1,8 +1,7 @@
 Hosting - Heroku?
 
 Core Functionality
-    -   +r Confirmation
-    -   Engravings
+    -   Permissions
 
 User Commands
     -   Compare to AE Wishlist
@@ -20,3 +19,4 @@ Luxury
     -   Slash Commands - https://discord-py-slash-command.readthedocs.io/en/latest/quickstart.html
     -   Make CR look nicer
     -   Logging
+    -   Memes
