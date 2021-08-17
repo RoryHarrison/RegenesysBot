@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import json
 import csv
-from RegenesysBot.cogs.cog_utils import *
+from cogs.cog_utils import *
 
 ROSTER_PATH = "rosters.json"
 

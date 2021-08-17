@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from RegenesysBot.cogs.cog_utils import *
+from cogs.cog_utils import *
 
 class WishlistCog(commands.Cog):
 
@@ -15,12 +15,17 @@ class WishlistCog(commands.Cog):
         if not await check_registration(ctx):
             return
 
-        with open(ROSTER_PATH, "r") as jsonfile:
+        with open(ROSTER_PATH, 'r') as jsonfile:
             rosters = json.load(jsonfile)
-        jsonfile.close()
+        print(rosters)
 
         wl_string = ""
-        user_roster = rosters[str(ctx.author.id)]
+        try:
+            user_roster = rosters[str(ctx.author.id)]
+        except:
+            await ctx.send("Could not find your roster")
+            return
+
         for wl_item in self.wishlist:
             wl_string += f" {format_roster(wl_item['Name'], wl_item['Asc'], wl_item['SI'], wl_item['F'], wl_item['En'])}"
             for hero in user_roster:

@@ -1,9 +1,6 @@
 import discord
 from discord.ext import commands
 
-import sys, os
-sys.path.append('C:/Users/roryh/Projects/')
-
 client = commands.Bot(command_prefix="+")
 
 @client.command()
