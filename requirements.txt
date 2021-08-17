@@ -1,1 +1,1 @@
-discord.py==2.0.0a3406+g23852404
+discord.py
