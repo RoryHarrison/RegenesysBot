@@ -14,7 +14,7 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     client.unload_extension(f'cogs.{extension}')
 
-for cog in ['Roster', 'AdminRoster', 'IGN', 'Ready']:
+for cog in ['Roster', 'AdminRoster', 'Wishlist',  'IGN', 'Ready']:
     client.load_extension(f'cogs.{cog}')
 
 client.run('ODA2NTA2NjA0NzQwMDgzNzMy.YBqbzg._5DyJZxjT6YzLwOQaeyfTtqRj6s')

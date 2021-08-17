@@ -15,7 +15,7 @@ class RosterCog(commands.Cog):
         
 
 
-    @commands.command(aliases=['roster'])
+    @commands.command(aliases=['roster, add'])
     async def r(self, ctx, hero=None, asc=None, si=None, fi=None, en="E0"):
         id = str(ctx.author.id)
 
@@ -84,22 +84,6 @@ class RosterCog(commands.Cog):
             await ctx.send("Could not find roster")
 
         write_json(self.rosters, ROSTER_PATH)
-
-    @commands.command(aliases=['benchmark', 'bench', 'bm'])
-    @commands.has_role("Guild Leadership")
-    async def b(self, ctx):
-
-        if not await check_registration(ctx):
-            return
-
-        wl_string = ""
-        user_roster = self.rosters[str(ctx.author.id)]
-        for wl_item in self.wishlist:
-            wl_string += f" {format_roster(wl_item['Name'], wl_item['Asc'], wl_item['SI'], wl_item['F'], wl_item['En'])}"
-            for hero in user_roster:
-                if wl_item['Name'] == hero['Name']:
-                    wl_string += f"\n[{format_roster(hero['Name'], hero['Asc'], hero['SI'], hero['F'], hero['En'])}]\n"
-        await ctx.send(f"```css\n{wl_string}```")
             
 
 def setup(client):
