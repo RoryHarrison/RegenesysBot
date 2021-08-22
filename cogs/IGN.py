@@ -4,6 +4,7 @@ from discord.ext import commands
 import json
 from postgres.models.User import User
 from postgres.db import session
+import re
 
 class IGNCog(commands.Cog):
 
@@ -27,13 +28,14 @@ class IGNCog(commands.Cog):
             await ctx.send(f"Registered {ign}")
 
     @commands.command()
-    async def ign(self, ctx, userID):
+    async def getign(self, ctx, userID):
         try:
-            userID = userID[2:-1]
+            # userID = str(userID[2:-1])
+            userID = re.sub("[^0-9]", "", userID)
             result = session.query(User).filter_by(id=userID).first()
             await ctx.send(result.ign)
-        except:
-            await ctx.send("Could not find an IGN for this user please ensure you tag the user. ie. @Larry#1234")
+        except Exception as e:
+            await ctx.send(f"Could not find an IGN for this user: {e}")
 
 
 def setup(client):

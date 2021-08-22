@@ -1,5 +1,7 @@
 import csv
 import json
+from postgres.db import session
+from postgres.models.User import User
 
 HERO_OFFSET = 10
 OFFSET = 5
@@ -35,17 +37,12 @@ def validate_roster_args(heroes, roster):
     return True
 
 async def check_registration(ctx):
-    return True
-    # id = ctx.author.id
-    # with open (IGN_PATH, mode='r') as jsonfile:
-    #     igns = json.load(jsonfile)
-    # jsonfile.close()
-
-    # if str(id) in igns:
-    #         return True
-    # else:
-    #     await ctx.send("Please register your ign first")
-    #     return False
+    if session.query(User).filter_by(id=str(ctx.author.id)).first():
+        return True
+    else:
+        await ctx.send("Please register your ign first")
+        return False
+    
 
 def format_roster(name, asc, si, f, en, newline=False):
 

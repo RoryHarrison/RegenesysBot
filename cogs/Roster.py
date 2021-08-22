@@ -5,6 +5,7 @@ import csv
 from cogs.config.cog_utils import *
 from postgres.db import session
 from postgres.models.Roster import Roster
+import re
 
 class RosterCog(commands.Cog):
 
@@ -13,7 +14,7 @@ class RosterCog(commands.Cog):
         self.client = client
         
 
-    @commands.command(aliases=['roster, add'])
+    @commands.command(aliases=['add'])
     async def r(self, ctx, hero=None, asc=None, si=None, fi=None, en="E0"):
         id = str(ctx.author.id)
 
@@ -56,14 +57,14 @@ class RosterCog(commands.Cog):
             await ctx.send(f"Added {roster.hero} for {ctx.author.name}")
 
 
-    @commands.command(aliases=['check', 'checkroster', 'cr'])
-    async def c(self, ctx, userID=None):
+    @commands.command(aliases=['check'])
+    async def cr(self, ctx, userID=None):
         
         if not await check_registration(ctx):
             return
         
         try:
-            userID = str(userID[2:-1])
+            userID = re.sub("[^0-9]", "", userID)
             result = session.query(Roster).filter_by(user=userID).all()
         except:
             await ctx.send("Could not find user")

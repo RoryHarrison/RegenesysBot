@@ -10,8 +10,8 @@ class WishlistCog(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(aliases=['compare', 'benchmark', 'bench', 'bm'])
-    async def b(self, ctx):
+    @commands.command()
+    async def compare(self, ctx):
 
         if not await check_registration(ctx):
             return
