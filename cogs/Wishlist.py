@@ -1,36 +1,34 @@
 import discord
 from discord.ext import commands
-from cogs.cog_utils import *
+from cogs.config.cog_utils import *
+from postgres.db import session
+from postgres.models.Wishlist import AEWish
+from postgres.models.Roster import Roster
 
 class WishlistCog(commands.Cog):
 
-    def __init__(self, client, wishlist):
+    def __init__(self, client):
         self.client = client
-        self.wishlist = wishlist
 
     @commands.command(aliases=['compare', 'benchmark', 'bench', 'bm'])
-    @commands.has_role("Guild Leadership")
     async def b(self, ctx):
 
         if not await check_registration(ctx):
             return
 
-        with open(ROSTER_PATH, 'r') as jsonfile:
-            rosters = json.load(jsonfile)
-        print(rosters)
-
         wl_string = ""
         try:
-            user_roster = rosters[str(ctx.author.id)]
+            user_roster = session.query(Roster).filter_by(user=str(ctx.author.id)).all()
+            wishlist = session.query(AEWish).all()
         except:
             await ctx.send("Could not find your roster")
             return
 
-        for wl_item in self.wishlist:
-            wl_string += f" {format_roster(wl_item['Name'], wl_item['Asc'], wl_item['SI'], wl_item['F'], wl_item['En'])}"
-            for hero in user_roster:
-                if wl_item['Name'] == hero['Name']:
-                    wl_string += f"\n[{format_roster(hero['Name'], hero['Asc'], hero['SI'], hero['F'], hero['En'])}]\n"
+        for wl_item in wishlist:
+            wl_string += f" {format_roster(wl_item.hero, wl_item.asc, wl_item.si, wl_item.fi, wl_item.en)}"
+            for row in user_roster:
+                if wl_item.hero == row.hero:
+                    wl_string += f"\n[{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}]\n"
         await ctx.send(f"```css\n{wl_string}```")
 
     @commands.command(aliases=['wishlistadd'])
@@ -43,43 +41,54 @@ class WishlistCog(commands.Cog):
             hero = hero.title()
             asc = asc.upper()
 
-        validation = validate_roster_args(self.heroes, hero, asc, si, fi, en)
+        aewish = AEWish(hero, asc, si, fi, en)
+
+        validation = validate_roster_args(get_heroes(), aewish)
         if not validation == True:
             await ctx.send(validation)
             return
 
-        for idx, item in enumerate(self.wishlist):
-            if item['Name'] == hero:
-                self.wishlist[idx] = {"Name":hero, "Asc":asc, "SI":si, "F":fi, "En":en}
-                write_json(self.wishlist, WL_PATH)
-                await ctx.send(f"{ctx.author.name} added {hero} to Wishlist")
-                return
-
-        self.wishlist.append({"Name":hero, "Asc":asc, "SI":si, "F":fi, "En":en})
-        write_json(self.wishlist, WL_PATH)
-        await ctx.send(f"{ctx.author.name} added {hero} to Wishlist")
+        try:
+            instance = session.query(AEWish).filter_by(
+            hero = aewish.hero
+            ).first()
+            if instance:
+                instance.asc = aewish.asc
+                instance.si = aewish.si
+                instance.fi = aewish.fi
+                instance.en = aewish.en
+                session.commit()
+            else:
+                session.add(aewish)
+        except Exception as e:
+            session.rollback()
+            await ctx.send(f"Could not add that hero (DB Error): {e}")
+            raise
+        else:
+            session.commit()
+            await ctx.send(f"{ctx.author.name} added {aewish.hero} to the AE Wishlist")
 
     @commands.command(aliases=['wishlistdel'])
     @commands.has_role("Guild Leadership")
     async def wld(self, ctx, hero):
-        for idx, item in enumerate(self.wishlist):
-            if item['Name'] == hero:
-                del self.wishlist[idx]
-                write_json(self.wishlist, WL_PATH)
-                await ctx.send(f"{ctx.author.name} removed {hero} from Wishlist")
-                return
-        ctx.send("Could not find that hero in the wishlist")
+        hero = hero.title()
+        try:
+            result = session.query(AEWish).filter_by(hero=hero).first()
+            session.delete(result)
+            session.commit()
+            await ctx.send(f"{ctx.author.name} removed {hero} from the AE Wishlist")
+        except Exception as e:
+            await ctx.send(f"Could not find hero in wishlist")
 
     @commands.command(aliases=['wishlist'])
     async def wl(self, ctx):
-        roster_str = format_roster('Hero', 'Asc', 'SI', 'F', 'EN') 
-        for hero in self.wishlist:
-            roster_str += format_roster(hero['Name'], hero['Asc'], hero['SI'], hero['F'], hero['En'], newline=True)
+        result = session.query(AEWish).all()
+        roster_str = format_roster('Hero', 'Asc', 'SI', 'F', 'EN')
+        for row in result:
+            roster_str += format_roster(row.hero, row.asc, row.si, row.fi, row.en, newline=True)
         await ctx.send(f"```{roster_str}```")
 
 def setup(client):
-    with open(WL_PATH, 'r') as jsonfile:
-        wishlist = json.load(jsonfile)
 
-    client.add_cog(WishlistCog(client, wishlist))
+    client.add_cog(WishlistCog(client))
     print("WishlistCog Loaded")

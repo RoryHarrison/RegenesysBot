@@ -2,18 +2,16 @@ import discord
 from discord.ext import commands
 import json
 import csv
-from cogs.cog_utils import *
+from cogs.config.cog_utils import *
+from postgres.db import session
+from postgres.models.Roster import Roster
 
 class RosterCog(commands.Cog):
 
 
-    def __init__(self, client, rosters, wishlist):
-        self.wishlist = wishlist
-        self.rosters = rosters
-        self.heroes = get_heroes()
+    def __init__(self, client):
         self.client = client
         
-
 
     @commands.command(aliases=['roster, add'])
     async def r(self, ctx, hero=None, asc=None, si=None, fi=None, en="E0"):
@@ -26,29 +24,37 @@ class RosterCog(commands.Cog):
             hero = hero.title()
             asc = asc.upper()
 
+        roster = Roster(id, hero, asc, si, fi, en)
+
         if not await check_registration(ctx):
             return
 
-        validation = validate_roster_args(self.heroes, hero, asc, si, fi, en)
+        validation = validate_roster_args(get_heroes(), roster)
         if not validation == True:
             await ctx.send(validation)
             return
 
-        if id in self.rosters:
-            for idx, item in enumerate(self.rosters[id]):
-                if item["Name"] == hero:
-                    self.rosters[id][idx] = {"Name":hero, "Asc":asc, "SI":si, "F":fi, "En":en}
-                    write_json(self.rosters, ROSTER_PATH)
-                    await ctx.send(f"Added {hero} for {ctx.author.name}")
-                    return
-                    
-            self.rosters[id].append({"Name":hero, "Asc":asc, "SI":si, "F":fi, "En":en})
+        try:
+            instance = session.query(Roster).filter_by(
+            user = roster.user,
+            hero = roster.hero
+            ).first()
+            if instance:
+                instance.asc = roster.asc
+                instance.si = roster.si
+                instance.fi = roster.fi
+                instance.en = roster.en
+                session.commit()
+            else:
+                session.add(roster)
+        except Exception as e:
+            session.rollback()
+            await ctx.send(f"Could not add that hero (DB Error): {e}")
+            raise
         else:
-            self.rosters[id] = [{"Name":hero, "Asc":asc, "SI":si, "F":fi, "En":en}]
-        
-        write_json(self.rosters, ROSTER_PATH)
-        await ctx.send(f"Added {hero} for {ctx.author.name}")
-    
+            session.commit()
+            await ctx.send(f"Added {roster.hero} for {ctx.author.name}")
+
 
     @commands.command(aliases=['check', 'checkroster', 'cr'])
     async def c(self, ctx, userID=None):
@@ -57,40 +63,19 @@ class RosterCog(commands.Cog):
             return
         
         try:
-            userID = userID[2:-1]
-            user_roster = self.rosters[userID]
+            userID = str(userID[2:-1])
+            result = session.query(Roster).filter_by(user=userID).all()
         except:
             await ctx.send("Could not find user")
             return
         
         roster_str = format_roster('Hero', 'Asc', 'SI', 'F', 'EN') 
-        for hero in user_roster:
-            roster_str += format_roster(hero['Name'], hero['Asc'], hero['SI'], hero['F'], hero['En'], newline=True)
+        for row in result:
+            roster_str += format_roster(row.hero, row.asc, row.si, row.fi, row.en, newline=True)
         
         await ctx.send(f"```{roster_str}```")
-
- 
-    @commands.command(aliases=['del', 'delete'])
-    @commands.has_role("Guild Leadership")
-    async def d(self, ctx, userID=None):
-
-        if not await check_registration(ctx):
-            return
-
-        try:
-            userID = userID[2:-1]
-            self.rosters.pop(userID)
-        except:
-            await ctx.send("Could not find roster")
-
-        write_json(self.rosters, ROSTER_PATH)
             
 
 def setup(client):
-    with open(ROSTER_PATH, 'r') as jsonfile:
-        rosters = json.load(jsonfile)
-    with open(WL_PATH, 'r') as jsonfile:
-        wishlist = json.load(jsonfile)
-
-    client.add_cog(RosterCog(client, rosters, wishlist))
+    client.add_cog(RosterCog(client))
     print("RosterCog Loaded")

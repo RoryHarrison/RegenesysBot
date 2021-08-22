@@ -1,35 +1,41 @@
 import discord
+import sys
 from discord.ext import commands
 import json
-
-IGN_PATH = "igns.json"
+from postgres.models.User import User
+from postgres.db import session
 
 class IGNCog(commands.Cog):
 
-    def __init__(self, client, igns):
+    def __init__(self, client):
         self.client = client
-        self.igns = igns
 
     @commands.command()
     async def register(self, ctx, ign):
-        self.igns[str(ctx.author.id)] = ign
-        
-        with open(IGN_PATH, 'w') as outfile:
-            json.dump(self.igns, outfile)
+        user = User(ctx.author.id, ign)
+        try:
+            instance = session.query(User).filter_by(id=str(ctx.author.id))
+            if instance.first():
+                instance.update({'id':str(ctx.author.id), 'ign':ign})
+            else:
+                session.add(user)
+        except Exception as e:
+            session.rollback()
+            await ctx.send(f"Could not register {ign}: {e}")
+        else:
+            session.commit()
+            await ctx.send(f"Registered {ign}")
 
     @commands.command()
     async def ign(self, ctx, userID):
         try:
             userID = userID[2:-1]
-            await ctx.send(self.igns[userID])
+            result = session.query(User).filter_by(id=userID).first()
+            await ctx.send(result.ign)
         except:
             await ctx.send("Could not find an IGN for this user please ensure you tag the user. ie. @Larry#1234")
 
 
 def setup(client):
-    with open (IGN_PATH, mode='r') as jsonfile:
-        igns = json.load(jsonfile)
-    jsonfile.close()
-    
-    client.add_cog(IGNCog(client, igns))
+    client.add_cog(IGNCog(client))
     print("IGNCog Loaded")

@@ -3,11 +3,7 @@ import json
 
 HERO_OFFSET = 10
 OFFSET = 5
-
-IGN_PATH = "igns.json"
-ROSTER_PATH="rosters.json"
 HEROES_PATH = "heroes.csv"
-WL_PATH = "wishlist.json"
 
 def get_heroes():
     hero_list = []
@@ -18,41 +14,38 @@ def get_heroes():
                 hero_list.append(item)
     return hero_list
 
-def write_json(items, path):
-    with open(path, 'w') as jsonfile:
-        json.dump(items, jsonfile)
-
-def validate_roster_args(heroes, hero, asc, si, fi, en):
-    if None in (hero, asc, si, fi, en):
+def validate_roster_args(heroes, roster):
+    if None in (roster.hero, roster.asc, roster.si, roster.fi, roster.en):
         return "Invalid Format, example: +roster lucius A 30 9"
-    if not hero in heroes:
+    if not roster.hero in heroes:
         return "Not a valid hero"
-    if not asc in ['E', 'E+', 'L', 'L+', 'M', 'M+', 'A', 'A1', 'A2', 'A3', 'A4', 'A5']:
+    if not roster.asc in ['E', 'E+', 'L', 'L+', 'M', 'M+', 'A', 'A1', 'A2', 'A3', 'A4', 'A5']:
         return "Please provide a valid Ascension level e.g. E+, A3 etc..."
     try:
-        si = int(si)
-        fi = int(fi)
+        si = int(roster.si)
+        fi = int(roster.fi)
     except:
         return "Please enter a valid SI and Furniture number"
     if not si in range(0, 41):
         return "Please enter an SI between 0 and 40"
     if not fi in range(0, 37):
         return "Please enter furniture between 0 and 36"
-    if not en in ['E0', 'E30', 'E60', 'E80', 'E100']:
+    if not roster.en in ['E0', 'E30', 'E60', 'E80', 'E100']:
         return "Please enter a valid engravings value e.g. E30, E60"
     return True
 
 async def check_registration(ctx):
-    id = ctx.author.id
-    with open (IGN_PATH, mode='r') as jsonfile:
-        igns = json.load(jsonfile)
-    jsonfile.close()
+    return True
+    # id = ctx.author.id
+    # with open (IGN_PATH, mode='r') as jsonfile:
+    #     igns = json.load(jsonfile)
+    # jsonfile.close()
 
-    if str(id) in igns:
-            return True
-    else:
-        await ctx.send("Please register your ign first")
-        return False
+    # if str(id) in igns:
+    #         return True
+    # else:
+    #     await ctx.send("Please register your ign first")
+    #     return False
 
 def format_roster(name, asc, si, f, en, newline=False):
 
