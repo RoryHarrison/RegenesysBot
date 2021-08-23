@@ -12,6 +12,7 @@ class IGNCog(commands.Cog):
         self.client = client
 
     @commands.command()
+    @commands.has_role("Re1 Guildies")
     async def register(self, ctx, ign):
         user = User(ctx.author.id, ign)
         try:
@@ -28,6 +29,7 @@ class IGNCog(commands.Cog):
             await ctx.send(f"Registered {ign}")
 
     @commands.command()
+    @commands.has_role("Re1 Guildies")
     async def getign(self, ctx, userID):
         try:
             # userID = str(userID[2:-1])

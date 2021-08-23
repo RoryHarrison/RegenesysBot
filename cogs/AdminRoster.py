@@ -24,7 +24,6 @@ class AdminRosterCog(commands.Cog):
             userID = userID[2:-1]
             result = session.query(Roster).filter_by(user=userID).all()
             for row in result:
-                print('ehh')
                 print(row)
                 session.delete(row)
             session.commit()

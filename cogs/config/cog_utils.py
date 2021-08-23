@@ -2,24 +2,24 @@ import csv
 import json
 from postgres.db import session
 from postgres.models.User import User
+from postgres.models.Hero import Hero
 
 HERO_OFFSET = 10
 OFFSET = 5
 HEROES_PATH = "heroes.csv"
 
 def get_heroes():
-    hero_list = []
-    with open(HEROES_PATH, 'r') as f:
-        reader = csv.reader(f)
-        for row in reader:
-            for item in row:
-                hero_list.append(item)
-    return hero_list
+    try:
+        return session.query(Hero).all()
+    except:
+        print("get_heroes failed")
+        raise
 
 def validate_roster_args(heroes, roster):
     if None in (roster.hero, roster.asc, roster.si, roster.fi, roster.en):
         return "Invalid Format, example: +roster lucius A 30 9"
-    if not roster.hero in heroes:
+    names = [h.hero for h in heroes]
+    if not roster.hero in names:
         return "Not a valid hero"
     if not roster.asc in ['E', 'E+', 'L', 'L+', 'M', 'M+', 'A', 'A1', 'A2', 'A3', 'A4', 'A5']:
         return "Please provide a valid Ascension level e.g. E+, A3 etc..."
@@ -32,6 +32,8 @@ def validate_roster_args(heroes, roster):
         return "Please enter an SI between 0 and 40"
     if not fi in range(0, 37):
         return "Please enter furniture between 0 and 36"
+    if roster.asc not in ['A', 'A1', 'A2', 'A3', 'A4', 'A5'] and fi != 0:
+        return "Cannot add furniture to an unascended hero"
     if not roster.en in ['E0', 'E30', 'E60', 'E80', 'E100']:
         return "Please enter a valid engravings value e.g. E30, E60"
     return True

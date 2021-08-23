@@ -11,6 +11,7 @@ class WishlistCog(commands.Cog):
         self.client = client
 
     @commands.command()
+    @commands.has_role("Re1 Guildies")
     async def compare(self, ctx):
 
         if not await check_registration(ctx):
@@ -81,6 +82,7 @@ class WishlistCog(commands.Cog):
             await ctx.send(f"Could not find hero in wishlist")
 
     @commands.command(aliases=['wishlist'])
+    @commands.has_role("Re1 Guildies")
     async def wl(self, ctx):
         result = session.query(AEWish).all()
         roster_str = format_roster('Hero', 'Asc', 'SI', 'F', 'EN')
