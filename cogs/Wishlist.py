@@ -23,7 +23,7 @@ class WishlistCog(commands.Cog):
         try:
             user_roster = session.query(Roster).filter_by(user=str(ctx.author.id)).all()
             wishlist = session.query(AEWish).all()
-            chunks = chunker(50, wishlist)
+            chunks = chunker(30, wishlist)
         except:
             await ctx.send("Could not find your roster")
             return
