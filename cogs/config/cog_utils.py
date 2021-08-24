@@ -7,6 +7,7 @@ from postgres.models.Hero import Hero
 HERO_OFFSET = 10
 OFFSET = 5
 HEROES_PATH = "heroes.csv"
+CATEGORIES = [879701970041057350, 824341262168621057, 879772050993057813]
 
 def get_heroes():
     try:

@@ -16,6 +16,8 @@ class AdminRosterCog(commands.Cog):
     @commands.command(aliases=['del', 'delete'])
     @commands.has_role("Guild Leadership")
     async def d(self, ctx, userID=None):
+        if ctx.channel.category_id not in CATEGORIES:
+            return
 
         if not await check_registration(ctx):
             return

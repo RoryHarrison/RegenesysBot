@@ -13,6 +13,8 @@ class WishlistCog(commands.Cog):
     @commands.command()
     @commands.has_role("Re1 Guildies")
     async def compare(self, ctx):
+        if ctx.channel.category_id not in CATEGORIES:
+            return
 
         if not await check_registration(ctx):
             return
@@ -35,6 +37,9 @@ class WishlistCog(commands.Cog):
     @commands.command(aliases=['wishlistadd'])
     @commands.has_role("Guild Leadership")
     async def wla(self, ctx, hero=None, asc=None, si=None, fi=None, en="E0"):
+        if ctx.channel.category_id not in CATEGORIES:
+            return
+        
         if None in (hero, asc, si, fi, en):
             await ctx.send("Invalid Format, example: +wla lucius A 30 9")
             return

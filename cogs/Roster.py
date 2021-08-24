@@ -17,6 +17,9 @@ class RosterCog(commands.Cog):
     @commands.command(aliases=['add'])
     @commands.has_role("Re1 Guildies")
     async def r(self, ctx, hero=None, asc=None, si=None, fi="0", en="E0"):
+        if ctx.channel.category_id not in CATEGORIES:
+            return
+
         id = str(ctx.author.id)
 
         if None in (hero, asc, si, fi, en):
@@ -61,7 +64,9 @@ class RosterCog(commands.Cog):
     @commands.command(aliases=['check'])
     @commands.has_role("Re1 Guildies")
     async def cr(self, ctx, userID=None):
-        
+        if ctx.channel.category_id not in CATEGORIES:
+            return
+
         if not await check_registration(ctx):
             return
         
