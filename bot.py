@@ -1,5 +1,8 @@
 import discord
 from discord.ext import commands
+import os
+
+discord_token = os.environ['DISCORD_TOKEN']
 
 client = commands.Bot(command_prefix="+")
 
@@ -14,4 +17,4 @@ async def unload(ctx, extension):
 for cog in ['Roster', 'AdminRoster', 'Wishlist',  'IGN', 'Ready']:
     client.load_extension(f'cogs.{cog}')
 
-client.run('ODA2NTA2NjA0NzQwMDgzNzMy.YBqbzg._5DyJZxjT6YzLwOQaeyfTtqRj6s')
+client.run(discord_token)

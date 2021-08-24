@@ -79,7 +79,6 @@ class RosterCog(commands.Cog):
             return
         
         for chunk in chunks:
-            print(len(chunk))
             roster_str = format_roster('Hero', 'Asc', 'SI', 'F', 'EN')
             for row in chunk:
                 roster_str += format_roster(row.hero, row.asc, row.si, row.fi, row.en, newline=True)
