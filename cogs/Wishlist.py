@@ -23,16 +23,18 @@ class WishlistCog(commands.Cog):
         try:
             user_roster = session.query(Roster).filter_by(user=str(ctx.author.id)).all()
             wishlist = session.query(AEWish).all()
+            chunks = chunker(50, wishlist)
         except:
             await ctx.send("Could not find your roster")
             return
 
-        for wl_item in wishlist:
-            wl_string += f" {format_roster(wl_item.hero, wl_item.asc, wl_item.si, wl_item.fi, wl_item.en)}"
-            for row in user_roster:
-                if wl_item.hero == row.hero:
-                    wl_string += f"\n[{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}]\n"
-        await ctx.send(f"```css\n{wl_string}```")
+        for chunk in chunks:
+            for wl_item in chunk:
+                wl_string += f" {format_roster(wl_item.hero, wl_item.asc, wl_item.si, wl_item.fi, wl_item.en)}"
+                for row in user_roster:
+                    if wl_item.hero == row.hero:
+                        wl_string += f"\n[{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}]\n"
+            await ctx.send(f"```css\n{wl_string}```")
 
     @commands.command(aliases=['wishlistadd'])
     @commands.has_role("Guild Leadership")
