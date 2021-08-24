@@ -19,16 +19,16 @@ class WishlistCog(commands.Cog):
         if not await check_registration(ctx):
             return
 
-        wl_string = ""
         try:
             user_roster = session.query(Roster).filter_by(user=str(ctx.author.id)).all()
             wishlist = session.query(AEWish).all()
-            chunks = chunker(20, wishlist)
+            chunks = chunker(30, wishlist)
         except:
             await ctx.send("Could not find your roster")
             return
 
         for chunk in chunks:
+            wl_string = ""
             for wl_item in chunk:
                 wl_string += f" {format_roster(wl_item.hero, wl_item.asc, wl_item.si, wl_item.fi, wl_item.en)}"
                 for row in user_roster:
