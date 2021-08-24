@@ -4,6 +4,7 @@ from discord.ext import commands
 import json
 from postgres.models.User import User
 from postgres.db import session
+from cogs.config.cog_utils import *
 import re
 
 class IGNCog(commands.Cog):
