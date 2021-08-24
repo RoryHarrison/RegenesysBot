@@ -69,19 +69,21 @@ class RosterCog(commands.Cog):
 
         if not await check_registration(ctx):
             return
-        
+
         try:
             userID = re.sub("[^0-9]", "", userID)
             result = session.query(Roster).filter_by(user=userID).all()
+            chunks = chunker(50, result)
         except:
             await ctx.send("Could not find user")
             return
         
-        roster_str = format_roster('Hero', 'Asc', 'SI', 'F', 'EN') 
-        for row in result:
-            roster_str += format_roster(row.hero, row.asc, row.si, row.fi, row.en, newline=True)
-        
-        await ctx.send(f"```{roster_str}```")
+        for chunk in chunks:
+            print(len(chunk))
+            roster_str = format_roster('Hero', 'Asc', 'SI', 'F', 'EN')
+            for row in chunk:
+                roster_str += format_roster(row.hero, row.asc, row.si, row.fi, row.en, newline=True)
+            await ctx.send(f"```{roster_str}```")
             
 
 def setup(client):

@@ -3,6 +3,7 @@ import json
 from postgres.db import session
 from postgres.models.User import User
 from postgres.models.Hero import Hero
+import itertools
 
 HERO_OFFSET = 10
 OFFSET = 5
@@ -45,6 +46,14 @@ async def check_registration(ctx):
     else:
         await ctx.send("Please register your ign first")
         return False
+
+def chunker(n, iterable):
+    it = iter(iterable)
+    while True:
+        chunk = tuple(itertools.islice(it, n))
+        if not chunk:
+            return
+        yield chunk
     
 
 def format_roster(name, asc, si, f, en, newline=False):
