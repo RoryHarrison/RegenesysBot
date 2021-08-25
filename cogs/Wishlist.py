@@ -35,9 +35,12 @@ class WishlistCog(commands.Cog):
                 wl_string += f" {format_roster(wl_item.hero, wl_item.asc, wl_item.si, wl_item.fi, wl_item.en)}\n"
                 for row in user_roster:
                     if wl_item.hero == row.hero:
-                        wl_string += f"[{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}]\n"
+                        if isDiff(row, wl_item):
+                            wl_string += f"-{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}\n"
+                        else:
+                            wl_string += f"+{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}\n"
                 wl_string += "\n"
-            await ctx.send(f"```css\n{wl_string}```")
+            await ctx.send(f"```diff\n{wl_string}```")
 
     @commands.command(aliases=['wishlistadd'])
     @commands.has_role("Guild Leadership")
