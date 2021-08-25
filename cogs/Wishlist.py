@@ -4,6 +4,7 @@ from cogs.config.cog_utils import *
 from postgres.db import session
 from postgres.models.Wishlist import AEWish
 from postgres.models.Roster import Roster
+import re
 
 class WishlistCog(commands.Cog):
 
@@ -12,7 +13,7 @@ class WishlistCog(commands.Cog):
 
     @commands.command()
     @commands.has_role("Re1 Guildies")
-    async def compare(self, ctx):
+    async def compare(self, ctx, userID=None):
         if ctx.channel.category_id not in CATEGORIES:
             return
 
@@ -20,7 +21,8 @@ class WishlistCog(commands.Cog):
             return
 
         try:
-            user_roster = session.query(Roster).filter_by(user=str(ctx.author.id)).all()
+            userID = re.sub("[^0-9]", "", userID)
+            user_roster = session.query(Roster).filter_by(user=userID).all()
             wishlist = session.query(AEWish).all()
             chunks = chunker(30, wishlist)
         except:
@@ -87,6 +89,7 @@ class WishlistCog(commands.Cog):
             session.commit()
             await ctx.send(f"{ctx.author.name} removed {hero} from the AE Wishlist")
         except Exception as e:
+            session.rollback()
             await ctx.send(f"Could not find hero in wishlist")
 
     @commands.command(aliases=['wishlist'])
@@ -97,6 +100,39 @@ class WishlistCog(commands.Cog):
         for row in result:
             roster_str += format_roster(row.hero, row.asc, row.si, row.fi, row.en, newline=True)
         await ctx.send(f"```{roster_str}```")
+
+    @commands.command(aliases=[])
+    @commands.has_role("Re1 Guildies")
+    async def diff(self, ctx, userID=None):
+        if ctx.channel.category_id not in CATEGORIES:
+            return
+
+        if not await check_registration(ctx):
+            return
+
+        try:
+            userID = re.sub("[^0-9]", "", userID)
+            user_roster = session.query(Roster).filter_by(user=userID).all()
+            wishlist = session.query(AEWish).all()
+            chunks = chunker(30, wishlist)
+        except:
+            await ctx.send("Could not find your roster")
+            return
+
+        for chunk in chunks:
+            wl_string = ""
+            for wl_item in chunk:
+                found = False
+                for row in user_roster:
+                    if wl_item.hero == row.hero:
+                        found=True
+                        if isDiff(row, wl_item):
+                            wl_string += f" {format_roster(wl_item.hero, wl_item.asc, wl_item.si, wl_item.fi, wl_item.en)}\n"
+                            wl_string += f"[{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}]\n\n"
+                if found == False:
+                    wl_string += f" {format_roster(wl_item.hero, wl_item.asc, wl_item.si, wl_item.fi, wl_item.en)}\n[MISSING]\n\n"
+            await ctx.send(f"```css\n{wl_string}```")
+
 
 def setup(client):
 

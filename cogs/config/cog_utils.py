@@ -1,3 +1,4 @@
+from postgres.models.Roster import Roster
 import csv
 import json
 from postgres.db import session
@@ -54,7 +55,21 @@ def chunker(n, iterable):
         if not chunk:
             return
         yield chunk
-    
+
+
+def isDiff(user:Roster, bench:Roster):
+    asc = ['E', 'E+', 'L', 'L+', 'M', 'M+', 'A', 'A1', 'A2', 'A3', 'A4', 'A5']
+    en = ['E0', 'E30', 'E60', 'E80', 'E100']
+    if asc.index(user.asc) < asc.index(bench.asc):
+        return True
+    if en.index(user.en) < en.index(bench.en):
+        return True
+    if int(user.si) < int(bench.si):
+        return True
+    if int(user.fi) < int(bench.fi):
+        return True
+    return False
+
 
 def format_roster(name, asc, si, f, en, newline=False):
 

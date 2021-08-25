@@ -14,9 +14,9 @@ class RosterCog(commands.Cog):
         self.client = client
         
 
-    @commands.command(aliases=['add'])
+    @commands.command(aliases=['r'])
     @commands.has_role("Re1 Guildies")
-    async def r(self, ctx, hero=None, asc=None, si=None, fi="0", en="E0"):
+    async def add(self, ctx, hero=None, asc=None, si=None, fi="0", en="E0"):
         if ctx.channel.category_id not in CATEGORIES:
             return
 
@@ -61,9 +61,9 @@ class RosterCog(commands.Cog):
             await ctx.send(f"Added {roster.hero} for {ctx.author.name}")
 
 
-    @commands.command(aliases=['check'])
+    @commands.command(aliases=['cr'])
     @commands.has_role("Re1 Guildies")
-    async def cr(self, ctx, userID=None):
+    async def check(self, ctx, userID=None):
         if ctx.channel.category_id not in CATEGORIES:
             return
 

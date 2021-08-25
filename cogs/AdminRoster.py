@@ -31,6 +31,7 @@ class AdminRosterCog(commands.Cog):
             session.commit()
             await ctx.send("Deleted Roster")
         except Exception as e:
+            session.rollback()
             await ctx.send(f"Could not find roster")
 
 

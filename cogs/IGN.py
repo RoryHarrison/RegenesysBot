@@ -37,14 +37,12 @@ class IGNCog(commands.Cog):
     async def getign(self, ctx, userID):
         if ctx.channel.category_id not in CATEGORIES:
             return
-
         try:
-            # userID = str(userID[2:-1])
             userID = re.sub("[^0-9]", "", userID)
             result = session.query(User).filter_by(id=userID).first()
             await ctx.send(result.ign)
         except Exception as e:
-            await ctx.send(f"Could not find an IGN for this user: {e}")
+            await ctx.send(f"Could not find an IGN for this user")
 
 
 def setup(client):
