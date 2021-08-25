@@ -30,10 +30,11 @@ class WishlistCog(commands.Cog):
         for chunk in chunks:
             wl_string = ""
             for wl_item in chunk:
-                wl_string += f" {format_roster(wl_item.hero, wl_item.asc, wl_item.si, wl_item.fi, wl_item.en)}"
+                wl_string += f" {format_roster(wl_item.hero, wl_item.asc, wl_item.si, wl_item.fi, wl_item.en)}\n"
                 for row in user_roster:
                     if wl_item.hero == row.hero:
-                        wl_string += f"\n[{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}]\n"
+                        wl_string += f"[{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}]\n"
+                wl_string += "\n"
             await ctx.send(f"```css\n{wl_string}```")
 
     @commands.command(aliases=['wishlistadd'])
