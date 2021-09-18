@@ -15,7 +15,9 @@ class RosterCog(commands.Cog):
     @commands.command(aliases=['random'])
     @commands.has_role("Re1 Guildies")
     async def rand(self, ctx, hero=None, asc=None, si=None, fi="0", en="E0"):
-        if ctx.channel.id != '888604446416842802':
+        if ctx.channel.id == 888604446416842802 or ctx.channel.category_id in [824341262168621057, 879772050993057813]:
+            pass
+        else:
             return
 
         try:
