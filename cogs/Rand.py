@@ -17,7 +17,14 @@ class RosterCog(commands.Cog):
     async def rand(self, ctx, hero=None, asc=None, si=None, fi="0", en="E0"):
         try:
             heroes = get_heroes()
-            await ctx.send(f"{ctx.author.name}'s Hero: {random.choice(heroes).hero}")
+            hero = "Oops"
+            while True:
+                x = random.choice(heroes)
+                if(x.faction not in ["Celestial", "Hypogean", "Dimensional"]):
+                    hero = x.hero
+                    break
+                
+            await ctx.send(f"{ctx.author.name}'s Hero: {hero}")
         except Exception as e:
             await ctx.send(f"Error: {e}")
 
