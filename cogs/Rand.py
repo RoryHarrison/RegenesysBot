@@ -14,7 +14,7 @@ class RosterCog(commands.Cog):
 
     @commands.command(aliases=['random'])
     @commands.has_role("Re1 Guildies")
-    async def add(self, ctx, hero=None, asc=None, si=None, fi="0", en="E0"):
+    async def rand(self, ctx, hero=None, asc=None, si=None, fi="0", en="E0"):
         heroes = get_heroes()
         await ctx.send(f"{ctx.author.name}'s Hero: {random.choice(heroes)}")
 
