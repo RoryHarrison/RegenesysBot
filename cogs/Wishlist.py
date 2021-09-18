@@ -40,7 +40,8 @@ class WishlistCog(commands.Cog):
                         else:
                             wl_string += f"+{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}\n"
                 wl_string += "\n"
-            await ctx.send(f"```diff\n{wl_string}```")
+            if wl_string != '':
+                await ctx.send(f"```diff\n{wl_string}```")
 
     @commands.command(aliases=['wishlistadd'])
     @commands.has_role("Guild Leadership")
@@ -134,7 +135,8 @@ class WishlistCog(commands.Cog):
                             wl_string += f"[{format_roster(row.hero, row.asc, row.si, row.fi, row.en)}]\n\n"
                 if found == False:
                     wl_string += f" {format_roster(wl_item.hero, wl_item.asc, wl_item.si, wl_item.fi, wl_item.en)}\n[MISSING]\n\n"
-            await ctx.send(f"```css\n{wl_string}```")
+            if wl_string != '':
+                await ctx.send(f"```css\n{wl_string}```")
 
 
 def setup(client):
