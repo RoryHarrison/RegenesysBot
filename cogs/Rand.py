@@ -15,8 +15,11 @@ class RosterCog(commands.Cog):
     @commands.command(aliases=['random'])
     @commands.has_role("Re1 Guildies")
     async def rand(self, ctx, hero=None, asc=None, si=None, fi="0", en="E0"):
-        heroes = get_heroes()
-        await ctx.send(f"{ctx.author.name}'s Hero: {random.choice(heroes)}")
+        try:
+            heroes = get_heroes()
+            await ctx.send(f"{ctx.author.name}'s Hero: {random.choice(heroes).hero}")
+        except Exception as e:
+            await ctx.send(f"Error: {e}")
 
 
 def setup(client):
