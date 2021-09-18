@@ -18,4 +18,3 @@ for cog in ['Roster', 'AdminRoster', 'Wishlist',  'IGN', 'Ready', 'Rand']:
     client.load_extension(f'cogs.{cog}')
 
 client.run(discord_token)
-# client.run('ODc5Nzg3NzYyMTAwODg3NjIz.YSU0NA.22vvAHTKLIpqz3-EPlGyKxNNCDY')
