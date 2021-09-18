@@ -15,6 +15,9 @@ class RosterCog(commands.Cog):
     @commands.command(aliases=['random'])
     @commands.has_role("Re1 Guildies")
     async def rand(self, ctx, hero=None, asc=None, si=None, fi="0", en="E0"):
+        if ctx.channel.id != '888604446416842802':
+            return
+
         try:
             heroes = get_heroes()
             hero = "Oops"
